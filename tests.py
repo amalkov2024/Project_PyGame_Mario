@@ -2,9 +2,11 @@ import pygame
 import sys
 import os
 
+
 def terminate():  # завершение игры
     pygame.quit()
     sys.exit()
+
 
 def load_image(name, color_key=None):
     fullname = os.path.join("data", name)
@@ -30,17 +32,17 @@ class Levelnum(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(pos_x, image_level_height * pos_y)
 
 
-
-def image_gen_level(level):
-    x, y =  10, 0
-    for i in level:
-        y+=1
-        Levelnum(level[i],x,y)
+def image_gen_level(level_img):
+    x, y = 10, 0
+    for level_name in level_img:
+        y += 1
+        Levelnum(level_img[level_name], x, y)
     return
+
+
 def chioce_level_screen():
     global list_file
-    choice_level=list_file[0]
-
+    choice_level = list_file[0]
     fon = pygame.transform.scale(load_image("fon.png"), (width, height))
     screen.blit(fon, (0, 0))
     while True:
@@ -48,23 +50,21 @@ def chioce_level_screen():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                return  choice_level# начинаем игру
+                return choice_level  # начинаем игру
+        # screen.fill(pygame.Color(0, 0, 0))
         levels_group.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)
 
 
-
-
 pygame.init()
-pygame.key.set_repeat(200, 70) # контроль повторения удерживаемых клавиш
+pygame.key.set_repeat(200, 70)  # контроль повторения удерживаемых клавиш
 FPS = 50
 # Размер окна игры 1280*720 размер клетки 40*40
 step = tile_width = tile_height = 40
-width = 32*tile_width
-height = 18*tile_height
+width = 32 * tile_width
+height = 18 * tile_height
 image_level_height = 55
-
 
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
@@ -78,11 +78,11 @@ all_sprites = pygame.sprite.Group()
 levels_group = pygame.sprite.Group()
 # изображения для спрайтов уровней
 list_file = [
-        file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
-    ]
+    file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
+]
 level_images = dict()
 for i in list_file:
-    level_images[i[:-4]] = i[:-4]+'.png'
+    level_images[i[:-4]] = load_image(i[:-4] + '.png')
 
 # Запуск игры
 tile_images = {"wall": load_image("box.png"), "empty": load_image("grass.png")}
