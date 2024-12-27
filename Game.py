@@ -122,20 +122,19 @@ def generate_level(level):
 
 def chioce_level_screen():
 
-    intro_text = ["ЗАСТАВКА"]
+    list_file = [
+        file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
+    ]
+    choice_level=list_file[0]
 
     fon = pygame.transform.scale(load_image("fon.png"), (width, height))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 50
-
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
+                return  choice_level# начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -144,6 +143,7 @@ def chioce_level_screen():
 # Код самой игры
 
 # Отображение имен файлов с уровнями игры для предварительного просмотра и выбора нужного
+'''
 list_file = [
     file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
 ]
@@ -156,6 +156,8 @@ if list_file:
 
 #level = input("Введите название файла в котором расположена карта уровня: ")
 level = 'level.txt'
+'''
+
 pygame.init()
 pygame.key.set_repeat(200, 70) # контроль повторения удерживаемых клавиш
 FPS = 50
@@ -182,13 +184,15 @@ player_image = load_image("mario.png", -1)
 
 camera = Camera()
 
+start_screen()  # Заставка перед началом игры
+level = chioce_level_screen()  # Выбор уровня игры
 # положение игрока и размер карты
 player, level_x, level_y = generate_level(load_level(level))
 # Inna
 dx = -(player.rect.x + player.rect.w // 2 - width // 2)
 dy = -(player.rect.y + player.rect.h // 2 - height // 2)
 
-start_screen()  # Заставка перед началом игры
+
 # Реализовать выбор уровня
 
 running = True
