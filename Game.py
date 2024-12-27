@@ -3,7 +3,6 @@ import sys
 import os
 
 
-
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites)
@@ -18,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 15, tile_height * pos_y + 5
         )
+
 
 class Camera:
     def __init__(self):
@@ -120,12 +120,12 @@ def generate_level(level):
     # вернем игрока, а также размер поля в клетках
     return new_player, x, y
 
-def chioce_level_screen():
 
+def chioce_level_screen():
     list_file = [
         file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
     ]
-    choice_level=list_file[0]
+    choice_level = list_file[0]
 
     fon = pygame.transform.scale(load_image("fon.png"), (width, height))
     screen.blit(fon, (0, 0))
@@ -134,10 +134,9 @@ def chioce_level_screen():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                return  choice_level# начинаем игру
+                return choice_level  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
-
 
 
 # Код самой игры
@@ -159,13 +158,12 @@ level = 'level.txt'
 '''
 
 pygame.init()
-pygame.key.set_repeat(200, 70) # контроль повторения удерживаемых клавиш
+pygame.key.set_repeat(200, 70)  # контроль повторения удерживаемых клавиш
 FPS = 50
 # Размер окна игры 1280*720 размер клетки 40*40
 step = tile_width = tile_height = 40
-width = 32*tile_width
-height = 18*tile_height
-
+width = 32 * tile_width
+height = 18 * tile_height
 
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
@@ -191,7 +189,6 @@ player, level_x, level_y = generate_level(load_level(level))
 # Inna
 dx = -(player.rect.x + player.rect.w // 2 - width // 2)
 dy = -(player.rect.y + player.rect.h // 2 - height // 2)
-
 
 # Реализовать выбор уровня
 
@@ -242,6 +239,6 @@ while running:
     tiles_group.draw(screen)
     player_group.draw(screen)
     pygame.display.flip()
-    clock.tick(FPS) # обновление экрана
+    clock.tick(FPS)  # обновление экрана
 
 terminate()
