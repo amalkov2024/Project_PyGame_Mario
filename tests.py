@@ -36,6 +36,7 @@ def image_gen_level(level_img):
     x, y = 10, 0
     for level_name in level_img:
         y += 1
+        #print(level_img[level_name])
         Levelnum(level_img[level_name], x, y)
     return
 
@@ -83,9 +84,9 @@ list_file = [
 level_images = dict()
 for i in list_file:
     level_images[i[:-4]] = load_image(i[:-4] + '.png')
-
+image_gen_level(level_images) # добавляем спрайты уровней
 # Запуск игры
 tile_images = {"wall": load_image("box.png"), "empty": load_image("grass.png")}
 player_image = load_image("mario.png", -1)
-
+print(levels_group)
 level = chioce_level_screen()  # Выбор уровня игры
