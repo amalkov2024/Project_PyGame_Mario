@@ -299,13 +299,6 @@ def generate_level(level):  # генерируем спрайты карты к�
 
 
 # Код самой игры
-try:
-    # читаем из файла highscore
-    with open('data/highscore.txt', 'r') as file:
-        highscore = max(int(x) for x in file.readline())
-except FileNotFoundError:
-    highscore = 0
-
 score = 0  # общий счёт игры
 lives = 3  # количество жизней на старте
 pygame.init()
@@ -331,7 +324,6 @@ bullets = pygame.sprite.Group()  # Группа для пуль
 toorel_group = pygame.sprite.Group()  # группа для турелей
 toorel_bullets = pygame.sprite.Group()  # группа пуль турелей
 # Запуск игры
-
 # список уровней
 list_file = [
     file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
@@ -348,9 +340,20 @@ tile_images = {"wall": load_image("box.png"), "empty": load_image("grass.png"),
                "toorel_left": load_image("toorel_left.png"), "toorel_right": load_image("toorel_right.png")}
 player_image = load_image("mario.png", -1)
 chioce_level_num = chioce_level_screen()  # номер стартового уровня
-time_level_start = pygame.time.get_ticks() // 1000  # время начала игры
+
 time_bullet = 0
+
 while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания уровня
+
+    try:
+        # читаем из файла highscore
+        with open('data/highscore.txt', 'r') as file:
+            highscore = int(file.readline())
+    except FileNotFoundError:
+        highscore = 0
+
+    time_level_start = pygame.time.get_ticks() // 1000  # время начала отсчета для текущего уровня уровня
+    time_level_end = 50  # время длительности уровня
     level_name = list_file[chioce_level_num]  # Выбор уровня игры level = filename 'level.txt'
     level_map = load_level(level_name)  # карта уровня список строк
     # положение игрока и размер карты
@@ -365,11 +368,17 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # running = False
+                # записываем в файл highscore
+                if score > highscore:
+                    with open('data/highscore.txt', 'w+') as file:
+                        file.write(str(score))
                 terminate()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    # running = False
+                    # записываем в файл highscore
+                    if score > highscore:
+                        with open('data/highscore.txt', 'w+') as file:
+                            file.write(str(score))
                     terminate()
                 if event.key == pygame.K_LEFT:
                     if (player.rect.x - step) < 0 or dx < 40 or \
@@ -419,8 +428,8 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
         # вывод общего счета в игре  и количества оставшихся жизней
         title_level = 'SCORE: ' + str(score) + ' ' * (20 - len(str(score))) + 'LIVES: ' + str(lives) + \
                       ' ' * (5 - len(str(lives))) + 'LEVEL: ' + str(chioce_level_num + 1) + \
-                      ' ' * (5 - len(str(chioce_level_num + 1))) + 'TIME: ' + str(time_level) + \
-                      ' ' * (20 - len(str(time_level))) + 'HIGHSCORE: ' + str(highscore)
+                      ' ' * (5 - len(str(chioce_level_num + 1))) + 'HIGHSCORE: ' + str(highscore) + \
+                      ' ' * (20 - len(str(highscore))) + 'TIME: ' + str(time_level_end - time_level)
         font = pygame.font.Font(None, 40)
         string_rendered = font.render(title_level, 1, pygame.Color("black"))
         intro_rect = string_rendered.get_rect()
@@ -437,10 +446,11 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
             score += 1  # увеличиваем общий счет
             pygame.mixer.music.load('data/music/coin.mp3')  # подгружаем файл с музыкой
             pygame.mixer.music.play()  # включаем музыку
-        if count_coin_cur_level * 0.6 < count_coin_level:  # уровень завершен
+        if count_coin_cur_level * 0.6 < count_coin_level:  # открыть ворота для перехода на следующий уровень
             level_end = True
             Tile("dooropen", *door_level)
         if level_end and ((player.rect.x - 8) // step, player.rect.y // step) == door_level:  # уровень пройден
+            score += (time_level_end - time_level)
             pygame.mixer.music.load('data/music/next_level.mp3')  # подгружаем файл с музыкой
             pygame.mixer.music.play()  # включаем музыку
             chioce_level_num += 1
@@ -454,7 +464,8 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
 
         player_kill_toorel = pygame.sprite.groupcollide(bullets, toorel_group, True,
                                                         True)  # удаление подстрелянных турелей
-
+        count_coin_level += len(player_kill_toorel) * 3  # + 3 за подбитие турели
+        score += len(player_kill_toorel) * 3  # +3 за подбитие турели
         bullet_kill_toorel = pygame.sprite.groupcollide(toorel_bullets, tiles_group, False,
                                                         False)  # проверка столкновения пуль турелей с ящиками
         for key_bul in bullet_kill_toorel:
@@ -472,6 +483,10 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
         bullets_pickup = pygame.sprite.spritecollide(player, toorel_bullets,
                                                      True)  # проверяем столкновение игрока с пулей от турели
         if toorel_pickup or bullets_pickup:
+            # записываем в файл highscore
+            if score > highscore:
+                with open('data/highscore.txt', 'w+') as file:
+                    file.write(str(score))
             if lives == 1:
                 game_over(score, chioce_level_num + 1)
             else:
