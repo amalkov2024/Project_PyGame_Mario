@@ -75,9 +75,9 @@ class Levelnum(pygame.sprite.Sprite):  # класс спрайтов  для "в
 
 def image_gen_level(level_img):  # генерируем спрайты "выбор уровня Level n"
     x, y = 20, 1
-    for level_name in level_img:
+    for elem in level_img:
         y += 1
-        Levelnum(level_name, x, y)
+        Levelnum(elem, x, y)
     return
 
 
@@ -86,42 +86,42 @@ def chioce_level_screen():
     strelka_group = pygame.sprite.Group()
     coord_x = 255 + 20
     coord_y = 2
-    dy = 1  # выбранный уровень
+    dy_lev = 1  # выбранный уровень
     strelka_level = Strelka('strelka.png', coord_x, coord_y)
     strelka_group.add(strelka_level)
     play_game = Strelka('play.png', width - 200, 11)
     strelka_group.add(play_game)
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event_chioce in pygame.event.get():
+            if event_chioce.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+            elif event_chioce.type == pygame.KEYDOWN:
+                if event_chioce.key == pygame.K_ESCAPE:
                     terminate()
-                if event.key == pygame.K_DOWN and 0 < dy < 9:
+                if event_chioce.key == pygame.K_DOWN and 0 < dy_lev < 9:
                     strelka_level.rect.y += image_level_height
-                    dy += 1
-                elif event.key == pygame.K_UP and 1 < dy < 10:
+                    dy_lev += 1
+                elif event_chioce.key == pygame.K_UP and 1 < dy_lev < 10:
                     strelka_level.rect.y -= image_level_height
-                    dy -= 1
-                elif event.key == pygame.K_SPACE:
-                    return dy - 1
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if play_game.rect.collidepoint(event.pos):
-                    return dy - 1  # начинаем игру
+                    dy_lev -= 1
+                elif event_chioce.key == pygame.K_SPACE:
+                    return dy_lev - 1
+            elif event_chioce.type == pygame.MOUSEBUTTONDOWN and event_chioce.button == 1:
+                if play_game.rect.collidepoint(event_chioce.pos):
+                    return dy_lev - 1  # начинаем игру
         screen.fill(pygame.Color(0, 0, 0))
         # отрисовка фона старт
         fon = pygame.transform.scale(load_image("fon.png"), (width, height))
         screen.blit(fon, (0, 0))
-        font = pygame.font.Font(None, 45)
+        font_chioce = pygame.font.Font(None, 45)
         intro_text = "Выбери уровень"
         text_coord = 80
-        string_rendered = font.render(intro_text, 1, pygame.Color("black"))
-        intro_rect = string_rendered.get_rect()
-        intro_rect.top = text_coord
-        intro_rect.x = 20
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        string_rendered_chioce = font_chioce.render(intro_text, 1, pygame.Color("black"))
+        intro_rect_chioce = string_rendered_chioce.get_rect()
+        intro_rect_chioce.top = text_coord
+        intro_rect_chioce.x = 20
+        text_coord += intro_rect_chioce.height
+        screen.blit(string_rendered_chioce, intro_rect_chioce)
         # отрисовка фона финиш
         levels_group.draw(screen)
         strelka_group.draw(screen)
@@ -192,56 +192,56 @@ def start_screen():
     text_size = 220
     text_coord = 100
     for line in intro_text:
-        font = pygame.font.Font(None, text_size)
+        font_start = pygame.font.Font(None, text_size)
         text_size = 100
-        string_rendered = font.render(line, 1, pygame.Color("blue"))
-        intro_rect = string_rendered.get_rect()
-        intro_rect.top = text_coord
-        intro_rect.x = 1280 // 2 - intro_rect.centerx
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        string_rendered_start = font_start.render(line, 1, pygame.Color("blue"))
+        intro_rect_start = string_rendered_start.get_rect()
+        intro_rect_start.top = text_coord
+        intro_rect_start.x = 1280 // 2 - intro_rect_start.centerx
+        text_coord += intro_rect_start.height
+        screen.blit(string_rendered_start, intro_rect_start)
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+        for event_start in pygame.event.get():
+            if event_start.type == pygame.KEYDOWN:
+                if event_start.key == pygame.K_ESCAPE:
                     terminate()
-            if event.type == pygame.QUIT:
+            if event_start.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+            elif event_start.type == pygame.KEYDOWN or event_start.type == pygame.MOUSEBUTTONDOWN:
                 pygame.mixer.music.stop()  # остановка музыки
                 return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
 
 
-def game_over(score_end, level_end, music_game_over='mario-smert.mp3', fon_game_over='game_over.png'):
+def game_over(score_end, end_level, music_game_over='mario-smert.mp3', fon_game_over='game_over.png'):
     pygame.mixer.music.load('data/music/' + music_game_over)  # подгружаем файл с музыкой
     pygame.mixer.music.play()  # включаем музыку
     intro_text = [
         "SCORE: " + str(score_end),
-        "LEVEL: " + str(level_end)
+        "LEVEL: " + str(end_level)
     ]
     fon = pygame.transform.scale(load_image(fon_game_over), (width, height))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 80)
+    font_over = pygame.font.Font(None, 80)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color("RED"))
-        intro_rect = string_rendered.get_rect()
+        string_rendered_over = font_over.render(line, 1, pygame.Color("RED"))
+        intro_rect_over = string_rendered_over.get_rect()
         text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        intro_rect_over.top = text_coord
+        intro_rect_over.x = 10
+        text_coord += intro_rect_over.height
+        screen.blit(string_rendered_over, intro_rect_over)
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event_over in pygame.event.get():
+            if event_over.type == pygame.QUIT:
                 pygame.mixer.music.stop()  # остановка музыки
                 terminate()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+            if event_over.type == pygame.KEYDOWN:
+                if event_over.key == pygame.K_ESCAPE:
                     pygame.mixer.music.stop()  # остановка музыки
                     terminate()
         pygame.display.flip()
@@ -253,12 +253,12 @@ def load_level(filename):
     try:
         # читаем уровень, убирая символы перевода строки
         with open(filename, "r") as mapFile:
-            level_map = [line.strip() for line in mapFile]
+            level_load_map = [line.strip() for line in mapFile]
             # и подсчитываем максимальную длину
         # max_width = max(map(len, level_map))
         max_width = 32
         # дополняем каждую строку пустыми клетками ('.')
-        return list(map(lambda x: x.ljust(max_width, "."), level_map))
+        return list(map(lambda x: x.ljust(max_width, "."), level_load_map))
     except FileNotFoundError:
         print("Файл не найден:", filename)
         print("Программа завершена")
@@ -353,7 +353,7 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
         highscore = 0
 
     time_level_start = pygame.time.get_ticks() // 1000  # время начала отсчета для текущего уровня уровня
-    time_level_end = 50  # время длительности уровня
+    time_end = 50  # время длительности уровня
     level_name = list_file[chioce_level_num]  # Выбор уровня игры level = filename 'level.txt'
     level_map = load_level(level_name)  # карта уровня список строк
     # положение игрока и размер карты
@@ -382,8 +382,7 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
                     terminate()
                 if event.key == pygame.K_LEFT:
                     if (player.rect.x - step) < 0 or dx < 40 or \
-                            level_map[(player.rect.y) // step] \
-                                    [(player.rect.x - 8) // step - 1] == '#':
+                            level_map[player.rect.y // step][(player.rect.x - 8) // step - 1] == '#':
                         continue
                     player.image = load_image("mario_left.png", -1)
                     player.rect.x -= step
@@ -391,25 +390,23 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
                     player.direction = 'left'
                 if event.key == pygame.K_RIGHT:
                     if (player.rect.x + step) > 1280 or dx > 1240 or \
-                            level_map[(player.rect.y) // step] \
-                                    [(player.rect.x - 8) // step + 1] == '#':
+                            level_map[player.rect.y // step][(player.rect.x - 8) // step + 1] == '#':
                         continue
                     player.image = load_image("mario_right.png", -1)
                     player.rect.x += step
                     dx += step
                     player.direction = 'right'
                 if event.key == pygame.K_UP:
-                    if (player.rect.y - step) < 0 or dy < 40 or level_map[(player.rect.y) // step - 1] \
-                            [(player.rect.x - 8) // step] == '#':
+                    if (player.rect.y - step) < 0 or dy < 40 or (level_map[player.rect.y // step - 1]
+                                                                 [(player.rect.x - 8) // step] == '#'):
                         continue
                     player.image = load_image("mario_up.png", -1)
                     player.rect.y -= step
                     dy -= step
                     player.direction = 'up'
                 if event.key == pygame.K_DOWN:
-                    if (player.rect.y + step) > 720 or dy > 680 or \
-                            level_map[(player.rect.y) // step + 1] \
-                                    [(player.rect.x - 8) // step] == '#':
+                    if (player.rect.y + step) > 720 or dy > 680 or (level_map[player.rect.y // step + 1]
+                                                                    [(player.rect.x - 8) // step] == '#'):
                         continue
                     player.image = load_image("mario_down.png", -1)
                     player.rect.y += step
@@ -429,7 +426,7 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
         title_level = 'SCORE: ' + str(score) + ' ' * (20 - len(str(score))) + 'LIVES: ' + str(lives) + \
                       ' ' * (5 - len(str(lives))) + 'LEVEL: ' + str(chioce_level_num + 1) + \
                       ' ' * (5 - len(str(chioce_level_num + 1))) + 'HIGHSCORE: ' + str(highscore) + \
-                      ' ' * (20 - len(str(highscore))) + 'TIME: ' + str(time_level_end - time_level)
+                      ' ' * (20 - len(str(highscore))) + 'TIME: ' + str(time_end - time_level)
         font = pygame.font.Font(None, 40)
         string_rendered = font.render(title_level, 1, pygame.Color("black"))
         intro_rect = string_rendered.get_rect()
@@ -450,7 +447,7 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
             level_end = True
             Tile("dooropen", *door_level)
         if level_end and ((player.rect.x - 8) // step, player.rect.y // step) == door_level:  # уровень пройден
-            score += (time_level_end - time_level)
+            score += (time_end - time_level)
             pygame.mixer.music.load('data/music/next_level.mp3')  # подгружаем файл с музыкой
             pygame.mixer.music.play()  # включаем музыку
             chioce_level_num += 1
