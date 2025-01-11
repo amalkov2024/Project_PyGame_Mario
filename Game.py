@@ -443,7 +443,7 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
             score += 1  # увеличиваем общий счет
             pygame.mixer.music.load('data/music/coin.mp3')  # подгружаем файл с музыкой
             pygame.mixer.music.play()  # включаем музыку
-        if count_coin_cur_level * 0.6 < count_coin_level:  # открыть ворота для перехода на следующий уровень
+        if count_coin_cur_level * 0.6 < count_coin_level:  # открыть ворота для перехода на следующий уровень игры
             level_end = True
             Tile("dooropen", *door_level)
         if level_end and ((player.rect.x - 8) // step, player.rect.y // step) == door_level:  # уровень пройден
