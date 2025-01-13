@@ -479,7 +479,7 @@ while chioce_level_num <= 8 and lives > 0:  # цикл проигрывания 
                                                     True)  # проверяем столкновение игрока с турелью
         bullets_pickup = pygame.sprite.spritecollide(player, toorel_bullets,
                                                      True)  # проверяем столкновение игрока с пулей от турели
-        if toorel_pickup or bullets_pickup:
+        if toorel_pickup or bullets_pickup or time_end - time_level <= 0:
             # записываем в файл highscore
             if score > highscore:
                 with open('data/highscore.txt', 'w+') as file:
